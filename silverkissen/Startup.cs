@@ -26,14 +26,26 @@ namespace silverkissen
         }
 
         public IConfiguration Configuration { get; }
+        private readonly string originString = "silverkissen_cors";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(originString, builder =>
+                {
+                    builder.WithOrigins(Configuration.GetSection("Cors:Prod").Value,
+                                        Configuration.GetSection("Cors:Test").Value)
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod();
+                });
+            });
+
             var secret = Configuration.GetSection("Auth:Secret").Value; 
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1).AddJsonOptions(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 #if DEBUG
             services.AddDbContext<SilverkissenContext>(options => options.UseSqlServer(Configuration.GetConnectionString("TestConnection")));
 #else
@@ -50,6 +62,7 @@ namespace silverkissen
                     IssuerSigningKey = symmetricSecurityKey
                 };
             });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,6 +77,7 @@ namespace silverkissen
                 app.UseHsts();
             }
 
+            app.UseCors(originString);
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseMvc();

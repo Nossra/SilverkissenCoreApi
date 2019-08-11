@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using silverkissen.Models;
 
 namespace silverkissen.Migrations
 {
     [DbContext(typeof(SilverkissenContext))]
-    partial class SilverkissenContextModelSnapshot : ModelSnapshot
+    [Migration("20190715174443_test3")]
+    partial class test3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,7 +33,7 @@ namespace silverkissen.Migrations
 
                     b.Property<string>("Breed");
 
-                    b.Property<int?>("CatLitterId");
+                    b.Property<int?>("CatLitterIdId");
 
                     b.Property<bool>("Chipped");
 
@@ -51,20 +53,9 @@ namespace silverkissen.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CatLitterId");
+                    b.HasIndex("CatLitterIdId");
 
                     b.ToTable("Cats");
-                });
-
-            modelBuilder.Entity("silverkissen.Models.Cat_Image", b =>
-                {
-                    b.Property<int>("CatId");
-
-                    b.Property<int>("ImageId");
-
-                    b.HasKey("CatId", "ImageId");
-
-                    b.ToTable("Cat_Image");
                 });
 
             modelBuilder.Entity("silverkissen.Models.CatLitter", b =>
@@ -98,17 +89,6 @@ namespace silverkissen.Migrations
                     b.ToTable("CatLitters");
                 });
 
-            modelBuilder.Entity("silverkissen.Models.CatLitter_Image", b =>
-                {
-                    b.Property<int>("CatLitterId");
-
-                    b.Property<int>("ImageId");
-
-                    b.HasKey("CatLitterId", "ImageId");
-
-                    b.ToTable("CatLitter_Image");
-                });
-
             modelBuilder.Entity("silverkissen.Models.CatLitter_Parent", b =>
                 {
                     b.Property<int>("CatId");
@@ -128,6 +108,8 @@ namespace silverkissen.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("CatId");
+
                     b.Property<string>("Filename");
 
                     b.Property<string>("Filetype");
@@ -135,6 +117,8 @@ namespace silverkissen.Migrations
                     b.Property<string>("Value");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CatId");
 
                     b.ToTable("Images");
                 });
@@ -156,26 +140,9 @@ namespace silverkissen.Migrations
 
             modelBuilder.Entity("silverkissen.Models.Cat", b =>
                 {
-                    b.HasOne("silverkissen.Models.CatLitter", "CatLitter")
+                    b.HasOne("silverkissen.Models.CatLitter", "CatLitterId")
                         .WithMany("Kittens")
-                        .HasForeignKey("CatLitterId")
-                        .OnDelete(DeleteBehavior.SetNull);
-                });
-
-            modelBuilder.Entity("silverkissen.Models.Cat_Image", b =>
-                {
-                    b.HasOne("silverkissen.Models.Cat")
-                        .WithMany("Images")
-                        .HasForeignKey("CatId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("silverkissen.Models.CatLitter_Image", b =>
-                {
-                    b.HasOne("silverkissen.Models.CatLitter")
-                        .WithMany("Images")
-                        .HasForeignKey("CatLitterId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CatLitterIdId");
                 });
 
             modelBuilder.Entity("silverkissen.Models.CatLitter_Parent", b =>
@@ -184,6 +151,13 @@ namespace silverkissen.Migrations
                         .WithMany("Parents")
                         .HasForeignKey("CatLitterId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("silverkissen.Models.Image", b =>
+                {
+                    b.HasOne("silverkissen.Models.Cat")
+                        .WithMany("Images")
+                        .HasForeignKey("CatId");
                 });
 #pragma warning restore 612, 618
         }

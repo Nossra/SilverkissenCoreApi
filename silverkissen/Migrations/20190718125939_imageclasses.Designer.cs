@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using silverkissen.Models;
 
 namespace silverkissen.Migrations
 {
     [DbContext(typeof(SilverkissenContext))]
-    partial class SilverkissenContextModelSnapshot : ModelSnapshot
+    [Migration("20190718125939_imageclasses")]
+    partial class imageclasses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,7 +66,7 @@ namespace silverkissen.Migrations
 
                     b.HasKey("CatId", "ImageId");
 
-                    b.ToTable("Cat_Image");
+                    b.ToTable("CatImages");
                 });
 
             modelBuilder.Entity("silverkissen.Models.CatLitter", b =>
@@ -106,7 +108,7 @@ namespace silverkissen.Migrations
 
                     b.HasKey("CatLitterId", "ImageId");
 
-                    b.ToTable("CatLitter_Image");
+                    b.ToTable("CatLitterImages");
                 });
 
             modelBuilder.Entity("silverkissen.Models.CatLitter_Parent", b =>

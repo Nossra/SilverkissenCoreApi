@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace silverkissen.Models
 {
-    public abstract class Litter
+    public abstract class Litter : ILitter
     {
         [Key]
         public int Id { get; set; }
@@ -17,7 +17,7 @@ namespace silverkissen.Models
         public bool Chipped { get; set; }
         public bool Pedigree { get; set; }
         public String PedigreeName { get; set; }
-        public String Status { get; set; }
+        public LitterStatus Status { get; set; }
         public int AmountOfKids { get; set; }
 
         public enum LitterStatus

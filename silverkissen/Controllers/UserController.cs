@@ -32,7 +32,8 @@ namespace silverkissen.Controllers
             if (validUser)
             { 
                 ITokenIssuer tokenIssuer = ModelFactory.NewTokenIssuer(Configuration);
-                string token = tokenIssuer.GetToken();
+                TokenObject token = new TokenObject(tokenIssuer.GetToken());
+
                 return Ok(token);
             }
             else

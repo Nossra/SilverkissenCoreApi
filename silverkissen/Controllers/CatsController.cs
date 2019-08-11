@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using silverkissen.Models;
+using System.Linq;
+using silverkissen.Models.ViewModels;
+using silverkissen.Models.Dtos;
 
 namespace silverkissen.Controllers
 {  
     [Route("api/cats")]
-    [ApiController]
-    [Authorize]
+    [ApiController] 
     public class CatsController : ControllerBase
     {
         private readonly SilverkissenContext _db;
@@ -28,6 +30,23 @@ namespace silverkissen.Controllers
             return await _db.Cats.ToListAsync();
         }
 
+        [HttpGet("parents")]
+        public async Task<ActionResult<Cat>> GetParents()
+        {
+            var query = from cat in _db.Cats 
+                        where cat.Parent == true
+                        select cat;
+
+            var result = await query.ToListAsync();
+            
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+
         // GET api/values/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Cat>> GetCat(int id)
@@ -38,22 +57,65 @@ namespace silverkissen.Controllers
                 return NotFound();
             } else
             {
-                return cat;
+                var catViewModel = new AdminCatViewModel
+                {
+                    Id = cat.Id,
+                    BirthDate = cat.BirthDate,
+                    Notes = cat.Notes,
+                    Age = cat.Age,
+                    Breed = cat.Breed,
+                    Color = cat.Color,
+                    Name = cat.Name,
+                    Sex = cat.Sex,
+                    Parent = cat.Parent,
+                    Pedigree = cat.Pedigree,
+                    Chipped = cat.Chipped,
+                    Vaccinated = cat.Vaccinated,
+                    CatLitter = cat.CatLitter
+                };
+
+                var imageQuery = from images in _db.Images
+                                 join ci in _db.Cat_Image on images.Id equals ci.ImageId
+                                 where ci.CatId == id
+                                 select images;
+                catViewModel.Images = await imageQuery.ToListAsync();
+
+                return Ok(catViewModel);
             }
         }
 
         // POST api/values
         [HttpPost]
-        public async Task<ActionResult<Cat>> PostCat([FromBody] Cat cat)
-        {
-            _db.Cats.Add(cat);
-            await _db.SaveChangesAsync();
+        //[Authorize]
+        public async Task<ActionResult<Cat>> PostCat([FromBody] CatDto cat)
+        { 
+            try
+            {
+                foreach (Image i in cat.Images) 
+                { 
+                    _db.Images.Add(i);
+                    await _db.SaveChangesAsync();
+                }
 
-            return CreatedAtAction(nameof(GetAllCats), new { id = cat.Id }, cat);
+                Cat newCat = cat;
+                for (int i = 0; i < cat.Images.Count; i++)
+                {
+                    newCat.Images.Add(new Cat_Image(cat.Id, cat.Images[i].Id));
+                }
+
+                _db.Cats.Add(newCat);
+                await _db.SaveChangesAsync();
+                return Ok(newCat);
+            } catch (Exception e) {
+                return BadRequest(e);
+            }
+
+            //return CreatedAtAction(nameof(GetAllCats), new { id = cat.Id }, cat);
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
+        //[Authorize]
         public async Task<ActionResult<Cat>> Put(int id, Cat cat)
         {
             if (id != cat.Id)
@@ -64,31 +126,11 @@ namespace silverkissen.Controllers
             await _db.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        [HttpPatch("{id}")]
-        public async Task<ActionResult<Cat>> Patch(int id, [FromBody] JsonPatchDocument<Cat> cat)
-        {
-            Cat CatToUpdate = await _db.Cats.FindAsync(id);
-            if (cat != null)
-            {
-                cat.ApplyTo(CatToUpdate, ModelState);
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest();
-                } else
-                {
-                    return new ObjectResult(CatToUpdate);
-                }
-            } else
-            {
-                return BadRequest();
-            }
-        }
-
+        } 
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
+        //[Authorize]
         public async Task<ActionResult<Cat>> Delete(int id)
         {
             Cat CatToDelete = await _db.Cats.FindAsync(id);
@@ -96,6 +138,20 @@ namespace silverkissen.Controllers
             if (CatToDelete == null)
             {
                 return NotFound();
+            }
+
+            if (CatToDelete.Parent == true)
+            {
+                var litter_parentsQuery = from p in _db.CatLitter_Parent
+                                          where p.CatId == id
+                                          select p;
+                var litter_parents = await litter_parentsQuery.ToListAsync();
+
+                foreach (CatLitter_Parent p in litter_parents)
+                {
+                    _db.CatLitter_Parent.Remove(p);
+                    await _db.SaveChangesAsync();
+                }
             }
 
             _db.Cats.Remove(CatToDelete);
