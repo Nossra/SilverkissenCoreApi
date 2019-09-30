@@ -36,6 +36,7 @@ namespace silverkissen
                 options.AddPolicy(originString, builder =>
                 {
                     builder.WithOrigins(Configuration.GetSection("Cors:Prod").Value,
+                                        Configuration.GetSection("Cors:Public").Value,
                                         Configuration.GetSection("Cors:Test").Value)
                                         .AllowAnyHeader()
                                         .AllowAnyMethod();

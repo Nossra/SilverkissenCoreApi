@@ -21,6 +21,30 @@ namespace silverkissen.Controllers
             _db = context;
         }
 
+        //[HttpGet]
+        //public async Task<ActionResult<Image>> GetAllImages()
+        //{
+        //    var catlitterQueru = from img in _db.Images
+        //                         join cli in _db.CatLitter_Image on img.Id equals cli.ImageId
+        //                         select img;
+
+        //    var images = await query.ToListAsync();
+        //    if (images == null)
+        //    {
+        //        return NotFound();
+        //    } else
+        //    {
+        //        foreach (Image img in images)
+        //        {
+        //            var catlitterImageQuery = from cl in _db.CatLitter_Image
+        //                                      where cl.ImageId == img.Id
+        //                                      select cl;
+        //        }
+        //        return Ok(images);
+        //    }
+
+        //}
+
         /*
         *  Catltter iamges 
         *  reach from api/images/catlitters

@@ -31,6 +31,21 @@ namespace silverkissen.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Images",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Filename = table.Column<string>(nullable: true),
+                    Filetype = table.Column<string>(nullable: true),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Images", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -42,6 +57,42 @@ namespace silverkissen.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CatLitter_Image",
+                columns: table => new
+                {
+                    CatLitterId = table.Column<int>(nullable: false),
+                    ImageId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CatLitter_Image", x => new { x.CatLitterId, x.ImageId });
+                    table.ForeignKey(
+                        name: "FK_CatLitter_Image_CatLitters_CatLitterId",
+                        column: x => x.CatLitterId,
+                        principalTable: "CatLitters",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CatLitter_Parent",
+                columns: table => new
+                {
+                    CatId = table.Column<int>(nullable: false),
+                    CatLitterId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CatLitter_Parent", x => new { x.CatId, x.CatLitterId });
+                    table.ForeignKey(
+                        name: "FK_CatLitter_Parent_CatLitters_CatLitterId",
+                        column: x => x.CatLitterId,
+                        principalTable: "CatLitters",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -71,53 +122,25 @@ namespace silverkissen.Migrations
                         column: x => x.CatLitterId,
                         principalTable: "CatLitters",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CatLitter_Parent",
+                name: "Cat_Image",
                 columns: table => new
                 {
                     CatId = table.Column<int>(nullable: false),
-                    CatLitterId = table.Column<int>(nullable: false)
+                    ImageId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CatLitter_Parent", x => new { x.CatId, x.CatLitterId });
+                    table.PrimaryKey("PK_Cat_Image", x => new { x.CatId, x.ImageId });
                     table.ForeignKey(
-                        name: "FK_CatLitter_Parent_Cats_CatId",
+                        name: "FK_Cat_Image_Cats_CatId",
                         column: x => x.CatId,
                         principalTable: "Cats",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CatLitter_Parent_CatLitters_CatLitterId",
-                        column: x => x.CatLitterId,
-                        principalTable: "CatLitters",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Images",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Filename = table.Column<string>(nullable: true),
-                    Filetype = table.Column<string>(nullable: true),
-                    Value = table.Column<string>(nullable: true),
-                    CatId = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Images", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Images_Cats_CatId",
-                        column: x => x.CatId,
-                        principalTable: "Cats",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -129,15 +152,16 @@ namespace silverkissen.Migrations
                 name: "IX_Cats_CatLitterId",
                 table: "Cats",
                 column: "CatLitterId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Images_CatId",
-                table: "Images",
-                column: "CatId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Cat_Image");
+
+            migrationBuilder.DropTable(
+                name: "CatLitter_Image");
+
             migrationBuilder.DropTable(
                 name: "CatLitter_Parent");
 
