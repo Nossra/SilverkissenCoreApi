@@ -37,7 +37,8 @@ namespace silverkissen
                 {
                     builder.WithOrigins(Configuration.GetSection("Cors:Prod").Value,
                                         Configuration.GetSection("Cors:Public").Value,
-                                        Configuration.GetSection("Cors:Test").Value)
+                                        Configuration.GetSection("Cors:Test").Value,
+                                        Configuration.GetSection("Cors:PublicTest").Value)
                                         .AllowAnyHeader()
                                         .AllowAnyMethod();
                 });
