@@ -28,12 +28,12 @@ namespace silverkissen.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CatLitter>>> GetAllCatLitters()
         {
-            var returnList = new List<AdminCatLitterViewModel>();
+            var returnList = new List<CatLitterViewModel>();
             var litters = await _db.CatLitters.ToListAsync();
 
             foreach (CatLitter litter in litters)
             {
-                var LitterViewModel = new AdminCatLitterViewModel();
+                var LitterViewModel = new CatLitterViewModel();
                 var parentsQuery = from cats in _db.Cats
                                    join parents in _db.CatLitter_Parent on cats.Id equals parents.CatId
                                    where parents.CatLitterId == litter.Id
@@ -79,7 +79,7 @@ namespace silverkissen.Controllers
             }
             else
             {
-                var litter = new AdminCatLitterViewModel
+                var litter = new CatLitterViewModel
                 {
                     Id = fromDb.Id,
                     Notes = fromDb.Notes,
@@ -119,13 +119,60 @@ namespace silverkissen.Controllers
         [HttpGet("active")]
         public async Task<ActionResult<CatLitter>> GetActiveLitters()
         {
-            var query = from litter in _db.CatLitters
+            //var query = from litter in _db.CatLitters
+            //            where litter.Status == Litter.LitterStatus.ACTIVE
+            //            select litter;
+
+            //var litters = await query.ToListAsync();
+
+
+
+            //return Ok(litters);
+
+            var returnList = new List<CatLitterViewModel>();
+            var litters = from litter in _db.CatLitters
                         where litter.Status == Litter.LitterStatus.ACTIVE
                         select litter;
 
-            var litters = await query.ToListAsync();
+            foreach (CatLitter litter in litters)
+            {
+                var LitterViewModel = new CatLitterViewModel();
+                var parentsQuery = from cats in _db.Cats
+                                   join parents in _db.CatLitter_Parent on cats.Id equals parents.CatId
+                                   where parents.CatLitterId == litter.Id
+                                   select cats;
 
-            return Ok(litters);
+                var imageQuery = from images in _db.Images
+                                 join cli in _db.CatLitter_Image on images.Id equals cli.ImageId
+                                 where cli.CatLitterId == litter.Id
+                                 select images;
+
+                var kittensQuery = from cats in _db.Cats 
+                                   where cats.CatLitter.Id == litter.Id
+                                   select cats;
+
+                LitterViewModel.Kittens = await kittensQuery.ToListAsync();
+                LitterViewModel.Parents = await parentsQuery.ToListAsync();
+                LitterViewModel.Images = await imageQuery.ToListAsync();
+                LitterViewModel.Id = litter.Id;
+                LitterViewModel.Notes = litter.Notes;
+                LitterViewModel.Pedigree = litter.Pedigree;
+                LitterViewModel.PedigreeName = litter.PedigreeName;
+                LitterViewModel.ReadyDate = litter.ReadyDate;
+                LitterViewModel.Status = litter.Status;
+                LitterViewModel.SVERAK = litter.SVERAK;
+                LitterViewModel.Vaccinated = litter.Vaccinated;
+                LitterViewModel.Chipped = litter.Chipped;
+                LitterViewModel.BirthDate = litter.BirthDate;
+                LitterViewModel.AmountOfKids = litter.AmountOfKids;
+                returnList.Add(LitterViewModel);
+            }
+
+            if (returnList == null)
+            {
+                return NotFound();
+            }
+            return Ok(returnList);
         }
 
         [HttpGet("archived")]

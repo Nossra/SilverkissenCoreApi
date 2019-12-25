@@ -31,9 +31,9 @@ namespace silverkissen.Utilities
             return new Cat();
         }
        
-        public static IAdminCatLitterViewModel NewAdminCatLitterViewModel()
+        public static ICatLitterViewModel NewAdminCatLitterViewModel()
         {
-            return new AdminCatLitterViewModel();
+            return new CatLitterViewModel();
         }
 
         public static ICatLitter NewCatLitter()
