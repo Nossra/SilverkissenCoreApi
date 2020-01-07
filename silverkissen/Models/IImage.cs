@@ -10,5 +10,6 @@ namespace silverkissen.Models
         string Filetype { get; set; }
         int Id { get; set; }
         string Value { get; set; }
+        bool DisplayPicture { get; set; }
     }
 }

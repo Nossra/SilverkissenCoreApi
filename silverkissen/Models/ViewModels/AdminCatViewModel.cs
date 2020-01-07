@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace silverkissen.Models.ViewModels
 {
-    public class AdminCatViewModel : Cat
+    public class CatViewModel : Cat
     { 
         public new ICollection<Image> Images { get; set; } = new List<Image>();
     }

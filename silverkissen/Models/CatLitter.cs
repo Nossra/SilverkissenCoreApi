@@ -12,7 +12,7 @@ namespace silverkissen.Models
         public bool SVERAK { get; set; } 
         public ICollection<CatLitter_Parent> Parents { get; set; } = new List<CatLitter_Parent>();
         public ICollection<Cat> Kittens { get; set; } = new List<Cat>();
-        public ICollection<CatLitter_Image> Images { get; set; } = new List<CatLitter_Image>();
+        public ICollection<CatLitter_Image> Images { get; set; } = new List<CatLitter_Image>(); 
 
         public CatLitter()
         {

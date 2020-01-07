@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using silverkissen.Models;
 
 namespace silverkissen.Migrations
 {
     [DbContext(typeof(SilverkissenContext))]
-    partial class SilverkissenContextModelSnapshot : ModelSnapshot
+    [Migration("20200105015614_displaypicture")]
+    partial class displaypicture
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

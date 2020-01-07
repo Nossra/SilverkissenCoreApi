@@ -14,7 +14,7 @@ namespace silverkissen.Models
         public bool Chipped { get; set; }
         public bool Vaccinated { get; set; }
         public ICollection<Cat_Image> Images { get; set; } = new List<Cat_Image>();
-        public CatLitter CatLitter { get; set; }
+        public CatLitter CatLitter { get; set; } 
 
         public Cat()
         {

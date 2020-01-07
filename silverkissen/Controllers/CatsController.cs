@@ -38,12 +38,41 @@ namespace silverkissen.Controllers
                         select cat;
 
             var result = await query.ToListAsync();
-            
+             
             if (result == null)
             {
                 return NotFound();
             }
-            return Ok(result);
+
+            var returnList = new List<CatViewModel>();
+            foreach (Cat cat in result)
+            {
+                CatViewModel catViewModel = new CatViewModel();
+
+                var imageQuery = from images in _db.Images
+                                 join ci in _db.Cat_Image on images.Id equals ci.ImageId
+                                 where ci.CatId == cat.Id && images.DisplayPicture == true
+                                 select images;
+
+                catViewModel.Images = await imageQuery.ToListAsync();
+                catViewModel.Id = cat.Id;
+                catViewModel.Name = cat.Name;
+                catViewModel.Notes = cat.Notes;
+                catViewModel.Parent = cat.Parent;
+                catViewModel.Pedigree = cat.Pedigree;
+                catViewModel.Sex = cat.Sex;
+                catViewModel.Vaccinated = cat.Vaccinated;
+                catViewModel.Age = cat.Age;
+                catViewModel.BirthDate = cat.BirthDate;
+                catViewModel.Breed = cat.Breed;
+                catViewModel.CatLitter = cat.CatLitter;
+                catViewModel.Chipped = cat.Chipped;
+                catViewModel.Color = cat.Color;
+
+                returnList.Add(catViewModel);
+            } 
+
+            return Ok(returnList);
         }
 
 
@@ -57,7 +86,7 @@ namespace silverkissen.Controllers
                 return NotFound();
             } else
             {
-                var catViewModel = new AdminCatViewModel
+                var catViewModel = new CatViewModel
                 {
                     Id = cat.Id,
                     BirthDate = cat.BirthDate,

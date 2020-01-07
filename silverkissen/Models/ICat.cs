@@ -7,6 +7,6 @@ namespace silverkissen.Models
         bool Chipped { get; set; }
         ICollection<Cat_Image> Images { get; set; } 
         bool Pedigree { get; set; }
-        bool Vaccinated { get; set; }
+        bool Vaccinated { get; set; } 
     }
 }
