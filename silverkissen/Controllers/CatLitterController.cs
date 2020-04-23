@@ -79,39 +79,13 @@ namespace silverkissen.Controllers
             }
             else
             {
-                var litterViewModel = new CatLitterViewModel
+                var litterViewModel = new CatLitterViewModel();
+                litterViewModel = await GetLitterData(fromDb);
+
+                if (litterViewModel == null)
                 {
-                    Id = fromDb.Id,
-                    Notes = fromDb.Notes,
-                    Pedigree = fromDb.Pedigree,
-                    PedigreeName = fromDb.PedigreeName,
-                    ReadyDate = fromDb.ReadyDate,
-                    Status = fromDb.Status,
-                    SVERAK = fromDb.SVERAK,
-                    Vaccinated = fromDb.Vaccinated,
-                    Chipped = fromDb.Chipped,
-                    BirthDate = fromDb.BirthDate
-                };
-                var kittensQuery = from cat in _db.Cats
-                                   where cat.CatLitter.Id == litterViewModel.Id
-                                   select cat;
-                var kittens = await kittensQuery.ToListAsync();
-                litterViewModel.Kittens = kittens;
-                litterViewModel.AmountOfKids = kittens.Count();
-
-                var parentsQuery = from cat in _db.Cats
-                                   join parent in _db.CatLitter_Parent on cat.Id equals parent.CatId
-                                   where parent.CatLitterId == id
-                                   select cat; 
-                litterViewModel.Parents = await parentsQuery.ToListAsync();
-
-                var imageQuery = from images in _db.Images
-                                 join cli in _db.CatLitter_Image on images.Id equals cli.ImageId
-                                 where cli.CatLitterId == litterViewModel.Id
-                                 select images;
-
-                litterViewModel.Images = await imageQuery.ToListAsync();
-
+                    return NotFound();
+                } 
                 return Ok(litterViewModel);
             }
         }
@@ -119,16 +93,6 @@ namespace silverkissen.Controllers
         [HttpGet("active")]
         public async Task<ActionResult<CatLitter>> GetActiveLitters()
         {
-            //var query = from litter in _db.CatLitters
-            //            where litter.Status == Litter.LitterStatus.ACTIVE
-            //            select litter;
-
-            //var litters = await query.ToListAsync();
-
-
-
-            //return Ok(litters);
-
             var returnList = new List<CatLitterViewModel>();
             var litters = from litter in _db.CatLitters
                         where litter.Status == Litter.LitterStatus.ACTIVE
