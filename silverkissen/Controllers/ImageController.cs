@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using silverkissen.Models;  
+using silverkissen.Models;
+using silverkissen.Utilities;
 
 namespace silverkissen.Controllers
 {
@@ -19,31 +20,7 @@ namespace silverkissen.Controllers
         public ImageController(SilverkissenContext context)
         {
             _db = context;
-        }
-
-        //[HttpGet]
-        //public async Task<ActionResult<Image>> GetAllImages()
-        //{
-        //    var catlitterQueru = from img in _db.Images
-        //                         join cli in _db.CatLitter_Image on img.Id equals cli.ImageId
-        //                         select img;
-
-        //    var images = await query.ToListAsync();
-        //    if (images == null)
-        //    {
-        //        return NotFound();
-        //    } else
-        //    {
-        //        foreach (Image img in images)
-        //        {
-        //            var catlitterImageQuery = from cl in _db.CatLitter_Image
-        //                                      where cl.ImageId == img.Id
-        //                                      select cl;
-        //        }
-        //        return Ok(images);
-        //    }
-
-        //}
+        } 
 
         /*
         *  Catltter iamges 
@@ -102,15 +79,15 @@ namespace silverkissen.Controllers
         {
             var ImageToDelete = await _db.Images.FindAsync(id); 
             if (ImageToDelete != null)
-            {
-                _db.Images.Remove(ImageToDelete);
+            { 
                 var query = from img in _db.CatLitter_Image
                             where img.ImageId == id
                             select img;
                 CatLitter_Image cli = query.FirstOrDefault();
                 _db.CatLitter_Image.Remove(cli);
+                _db.Images.Remove(ImageToDelete);
                 await _db.SaveChangesAsync();
-                return Ok();
+                return Ok(ImageToDelete);
             }
 
             return NotFound();
@@ -128,18 +105,32 @@ namespace silverkissen.Controllers
                         where ci.CatId == id
                         select i;
 
-            var litterImages = await query.ToListAsync();
+            var catImages = await query.ToListAsync();
 
-            if (litterImages != null)
-            {
-                return Ok(litterImages);
-            }
+            if (catImages != null)
+            { 
+                return Ok(catImages);
+            } 
+
             return NotFound();
         }
 
         [HttpPost("catimages/{id}")]
         public async Task<ActionResult<Image>> PostImageToCat([FromBody] Image image, int id)
         {
+            //string endValue = "";
+            //try
+            //{
+            //    var index = image.Value.IndexOf("9j/") +3; 
+            //    endValue = image.Value.Substring(index); 
+            //} catch (Exception e)
+            //{
+            //    throw e;
+            //}
+            //IImageCompression compressor = ModelFactory.NewImageCompressor();
+
+            //string compressedImage = compressor.CompressImage(endValue);
+            //image.Value = "data:image/jpeg;base64,/9j/" + compressedImage;
             _db.Images.Add(image);
             await _db.SaveChangesAsync();
 
@@ -174,15 +165,16 @@ namespace silverkissen.Controllers
             var ImageToDelete = await _db.Images.FindAsync(id);
             if (ImageToDelete != null)
             {
-                _db.Images.Remove(ImageToDelete);
+                
                 var query = from img in _db.Cat_Image
                             where img.ImageId == id
                             select img;
                 Cat_Image ci = query.FirstOrDefault();
                 _db.Cat_Image.Remove(ci);
+                _db.Images.Remove(ImageToDelete);
                 await _db.SaveChangesAsync();
 
-                return Ok();
+                return Ok(ImageToDelete);
             }
 
             return NotFound();

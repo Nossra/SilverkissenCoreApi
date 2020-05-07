@@ -108,6 +108,13 @@ namespace silverkissen.Controllers
                                  where ci.CatId == id
                                  select images;
                 catViewModel.Images = await imageQuery.ToListAsync();
+                //List<Image> imgs = await imageQuery.ToListAsync();
+
+                //foreach (Image img in imgs)
+                //{
+                //    img.Value = img.DecompressImage(img.Value);
+                //}
+                //catViewModel.Images = imgs;
 
                 return Ok(catViewModel);
             }
@@ -186,7 +193,7 @@ namespace silverkissen.Controllers
             _db.Cats.Remove(CatToDelete);
             await _db.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(CatToDelete);
         }
     }
 }

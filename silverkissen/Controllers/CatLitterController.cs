@@ -176,7 +176,7 @@ namespace silverkissen.Controllers
 
             var imageQuery = from images in _db.Images
                              join cli in _db.CatLitter_Image on images.Id equals cli.ImageId
-                             where cli.CatLitterId == litter.Id && images.DisplayPicture == true
+                             where cli.CatLitterId == litter.Id
                              select images;
 
             var kittensQuery = from cats in _db.Cats
@@ -272,29 +272,18 @@ namespace silverkissen.Controllers
 
                 var kittens = await kittensQuery.ToListAsync();
 
+                foreach (Cat kitten in kittens)
+                {
+                    _db.Cats.Remove(kitten);
+                }
 
                 _db.CatLitters.Remove(Litter);
                 await _db.SaveChangesAsync();
 
-                return NoContent();
+                return Ok(Litter);
             }
 
 
-        }
-
-        //[HttpPatch("images")]
-        //public async Task<ActionResult<CatLitter>> AddImageToCatLitter([FromBody] Image image)
-        //{
-        //    _db.Images.Add(image);
-
-        //    var litterQuery = from litter in _db.CatLitters
-        //                      select litter;
-
-        //    List<CatLitter> litterList = await litterQuery.ToListAsync();
-        //    CatLitter latestAddedLitter = litterList[litterList.Count - 1];
-
-        //    _db.
-            
-        //}
+        } 
     }
 }

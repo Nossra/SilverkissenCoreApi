@@ -14,7 +14,7 @@ namespace silverkissen.Utilities
         public static IImage NewImage()
         {
             return new Image();
-        }
+        } 
 
         public static IUser NewUser(string username, string password)
         {
@@ -42,13 +42,14 @@ namespace silverkissen.Utilities
         }
 
         public static ICatLitter NewCatLitter(List<Image> images, List<CatLitter_Parent> parents)
-        {
-            foreach (Image i in images)
-            {
-                //save images in db
-            }
+        { 
             List<CatLitter_Image> catlitter_imageList = new List<CatLitter_Image>();
             return new CatLitter(catlitter_imageList, parents);
+        }
+
+        public static IImageCompression NewImageCompressor()
+        {
+            return new ImageCompressor();
         }
     }
 }
