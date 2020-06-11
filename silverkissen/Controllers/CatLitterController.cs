@@ -80,7 +80,7 @@ namespace silverkissen.Controllers
             else
             {
                 var litterViewModel = new CatLitterViewModel();
-                litterViewModel = await GetLitterData(fromDb);
+                litterViewModel = await GetLitterData(fromDb, false);
 
                 if (litterViewModel == null)
                 {
@@ -100,7 +100,7 @@ namespace silverkissen.Controllers
 
             foreach (CatLitter litter in litters)
             {
-                var LitterViewModel = await GetLitterData(litter);
+                var LitterViewModel = await GetLitterData(litter, true);
 
                 returnList.Add(LitterViewModel);
             }
@@ -127,7 +127,7 @@ namespace silverkissen.Controllers
 
             foreach (CatLitter litter in litters)
             {
-                var LitterViewModel = await GetLitterData(litter);
+                var LitterViewModel = await GetLitterData(litter, true);
 
                 returnList.Add(LitterViewModel);
             }
@@ -153,7 +153,7 @@ namespace silverkissen.Controllers
 
             foreach (CatLitter litter in litters)
             {
-                var LitterViewModel = await GetLitterData(litter);
+                var LitterViewModel = await GetLitterData(litter,true);
 
                 returnList.Add(LitterViewModel);
             }
@@ -166,7 +166,7 @@ namespace silverkissen.Controllers
             return Ok(returnList);
         }
 
-        public async Task<CatLitterViewModel> GetLitterData(CatLitter litter)
+        public async Task<CatLitterViewModel> GetLitterData(CatLitter litter, bool displayPicture)
         {
             var LitterViewModel = new CatLitterViewModel();
             var parentsQuery = from cats in _db.Cats
@@ -179,6 +179,14 @@ namespace silverkissen.Controllers
                              where cli.CatLitterId == litter.Id
                              select images;
 
+            if (displayPicture == true)
+            {
+                imageQuery = from images in _db.Images
+                             join cli in _db.CatLitter_Image on images.Id equals cli.ImageId
+                             where cli.CatLitterId == litter.Id && images.DisplayPicture == true 
+                             select images;
+            } 
+                 
             var kittensQuery = from cats in _db.Cats
                                where cats.CatLitter.Id == litter.Id
                                select cats;
